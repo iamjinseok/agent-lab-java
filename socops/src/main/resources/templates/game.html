@@ -19,25 +19,28 @@
 <!-- ============================================================= -->
 <!--  LOBBY — visible before a game starts                          -->
 <!-- ============================================================= -->
-<div id="lobbyView" class="flex flex-col items-center justify-center min-h-full p-6 lobby-bg">
-    <div class="text-center max-w-sm">
-        <div class="mb-2" style="font-size:3.5rem; line-height:1;">🌈</div>
-        <h1 class="rainbow-text mb-1" style="font-size:3.5rem; line-height:1.1; font-family:var(--font-display);">Soc Ops</h1>
-        <p class="mb-8 text-ghost" style="font-size:1rem; letter-spacing:0.12em; text-transform:uppercase; font-weight:600;">Social Bingo</p>
+<div id="lobbyView" class="flex flex-col items-center justify-center min-h-full lobby-bg">
+    <div class="lobby-layout">
 
-        <div class="glass-card rounded-xl p-6 mb-8">
-            <h2 class="font-semibold mb-3" style="color:rgba(255,255,255,0.9);">How to play</h2>
-            <ul class="text-left text-ghost-dim text-sm space-y-2">
-                <li>🔍 Find people who match the questions</li>
-                <li>👆 Tap a square when you find a match</li>
-                <li>🏆 Get 5 in a row to win!</li>
-            </ul>
+        <!-- ── Hero: value statement + CTA ─────────────────── -->
+        <div class="lobby-hero">
+            <div class="lobby-emoji">🌈</div>
+            <h1 class="rainbow-text lobby-title">Soc Ops</h1>
+            <p class="lobby-sub">Social Bingo</p>
+            <p class="lobby-tagline">Find someone who matches each square.<br>Five in a row — you win!</p>
+            <div class="lobby-cta-wrap">
+                <button onclick="launchGame()" class="btn-rainbow font-semibold rounded-lg lobby-cta-btn">
+                    ✨ Start Game
+                </button>
+            </div>
         </div>
 
-        <button onclick="launchGame()"
-                class="w-full btn-rainbow font-semibold py-4 px-8 rounded-lg text-lg">
-            ✨ Start Game
-        </button>
+        <!-- ── Decorative mini board teaser (non-interactive) ── -->
+        <div class="teaser-wrap" aria-hidden="true">
+            <span class="teaser-label">sneak peek</span>
+            <div id="teaserBoard" class="teaser-grid"></div>
+        </div>
+
     </div>
 </div>
 
@@ -327,6 +330,58 @@
     } else {
         showPhase("LOBBY");
     }
+})();
+</script>
+
+<!-- ============================================================= -->
+<!--  Teaser board populator (decorative only, no game state)       -->
+<!-- ============================================================= -->
+<script>
+(function () {
+    /* Diagonal win (positions 0,6,12,18,24) + a few marked cells */
+    var TEASER = [
+        { t: "Owns a pet 🐾",      s: "win"    },
+        { t: "3+ languages",        s: ""       },
+        { t: "Loves hiking",        s: "marked" },
+        { t: "Morning person",      s: ""       },
+        { t: "Has a twin",          s: ""       },
+        { t: "Watches anime",       s: "marked" },
+        { t: "Home cook",           s: "win"    },
+        { t: "Plays guitar",        s: ""       },
+        { t: "Vegetarian",          s: ""       },
+        { t: "Loves sushi",         s: "marked" },
+        { t: "Reads daily",         s: ""       },
+        { t: "Has siblings",        s: ""       },
+        { t: "FREE ⭐",             s: "free"   },
+        { t: "Loves cats",          s: ""       },
+        { t: "Gamer 🎮",            s: "marked" },
+        { t: "Hates Mondays",       s: ""       },
+        { t: "Night owl 🦉",        s: "marked" },
+        { t: "Coffee addict",       s: ""       },
+        { t: "Gym regular",         s: "win"    },
+        { t: "Has a garden",        s: ""       },
+        { t: "Loves travel",        s: ""       },
+        { t: "Foodie 🍜",           s: ""       },
+        { t: "WFH life",            s: "marked" },
+        { t: "Tea person",          s: ""       },
+        { t: "Music lover 🎵",      s: "win"    }
+    ];
+
+    var board = document.getElementById("teaserBoard");
+    if (!board) { return; }
+
+    TEASER.forEach(function (cell, i) {
+        var div = document.createElement("div");
+        var cls = "teaser-cell";
+        if (cell.s === "win")    { cls += " teaser-cell-win";    }
+        if (cell.s === "marked") { cls += " teaser-cell-marked"; }
+        if (cell.s === "free")   { cls += " teaser-cell-free";   }
+        div.className = cls;
+        div.textContent = cell.t;
+        /* staggered reveal: base delay 0.45 s, +25 ms per cell */
+        div.style.animationDelay = (0.45 + i * 0.025) + "s";
+        board.appendChild(div);
+    });
 })();
 </script>
 

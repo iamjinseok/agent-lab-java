@@ -131,6 +131,7 @@ body {
 .mb-4    { margin-bottom: 1rem; }
 .mb-6    { margin-bottom: 1.5rem; }
 .mb-8    { margin-bottom: 2rem; }
+.mt-8    { margin-top: 2rem; }
 .mx-auto { margin-left: auto; margin-right: auto; }
 
 /* ── backgrounds ───────────────────────────────────────────────── */
@@ -382,6 +383,111 @@ button:disabled { cursor: default; }
 .leading-tight   { line-height: 1.25; }
 
 .min-h-\[60px\] { min-height: 60px; }
+
+/* ── lobby staggered entrance ───────────────────────────────────── */
+@keyframes slide-up-fade {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.lobby-enter-1,
+.lobby-enter-2,
+.lobby-enter-3,
+.lobby-enter-4,
+.lobby-enter-5,
+.lobby-enter-6 {
+    animation: slide-up-fade 0.48s ease-out both;
+}
+.lobby-enter-1 { animation-delay: 0.04s; }
+.lobby-enter-2 { animation-delay: 0.13s; }
+.lobby-enter-3 { animation-delay: 0.22s; }
+.lobby-enter-4 { animation-delay: 0.31s; }
+.lobby-enter-5 { animation-delay: 0.40s; }
+.lobby-enter-6 { animation-delay: 0.50s; }
+
+.lobby-step-1 { animation: slide-up-fade 0.45s ease-out 0.55s both; }
+.lobby-step-2 { animation: slide-up-fade 0.45s ease-out 0.68s both; }
+.lobby-step-3 { animation: slide-up-fade 0.45s ease-out 0.81s both; }
+
+/* ── story strip layout ─────────────────────────────────────────── */
+.story-strip {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+@media (min-width: 480px) {
+    .story-strip {
+        flex-direction: row;
+        align-items: center;
+        gap: 0;
+    }
+}
+
+/* ── story step card ────────────────────────────────────────────── */
+.story-step {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    text-align: left;
+}
+
+@media (min-width: 480px) {
+    .story-step {
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.3rem;
+        padding: 0.9rem 0.75rem;
+    }
+}
+
+.step-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+@media (min-width: 480px) {
+    .step-icon { font-size: 1.6rem; margin-bottom: 0.1rem; }
+}
+
+.step-num {
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.3);
+    line-height: 1;
+}
+
+.step-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.2;
+    flex: 1;
+}
+
+@media (min-width: 480px) {
+    .step-label { flex: unset; }
+}
+
+/* ── story strip arrow divider ──────────────────────────────────── */
+.story-arrow {
+    display: none;
+    color: rgba(255, 255, 255, 0.18);
+    font-size: 1.5rem;
+    padding: 0 0.2rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 480px) {
+    .story-arrow { display: block; }
+}
 
 /* ── keyframes ─────────────────────────────────────────────────── */
 @keyframes bounce {

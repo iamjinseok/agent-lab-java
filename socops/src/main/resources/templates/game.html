@@ -17,27 +17,43 @@
 <body class="h-full">
 
 <!-- ============================================================= -->
-<!--  LOBBY — visible before a game starts                          -->
+<!--  LOBBY — visible before a game starts  (Variation B)          -->
 <!-- ============================================================= -->
-<div id="lobbyView" class="flex flex-col items-center justify-center min-h-full p-6 lobby-bg">
-    <div class="text-center max-w-sm">
-        <div class="mb-2" style="font-size:3.5rem; line-height:1;">🌈</div>
-        <h1 class="rainbow-text mb-1" style="font-size:3.5rem; line-height:1.1; font-family:var(--font-display);">Soc Ops</h1>
-        <p class="mb-8 text-ghost" style="font-size:1rem; letter-spacing:0.12em; text-transform:uppercase; font-weight:600;">Social Bingo</p>
+<div id="lobbyView" class="flex flex-col items-center justify-center min-h-full lobby-bg" style="padding: 2rem 1.25rem 1.5rem;">
 
-        <div class="glass-card rounded-xl p-6 mb-8">
-            <h2 class="font-semibold mb-3" style="color:rgba(255,255,255,0.9);">How to play</h2>
-            <ul class="text-left text-ghost-dim text-sm space-y-2">
-                <li>🔍 Find people who match the questions</li>
-                <li>👆 Tap a square when you find a match</li>
-                <li>🏆 Get 5 in a row to win!</li>
-            </ul>
-        </div>
+    <!-- hero block -->
+    <div class="text-center" style="max-width: 26rem; width: 100%;">
+        <div class="lobby-enter-1" style="font-size:3rem; line-height:1; margin-bottom:0.4rem;">🌈</div>
+        <h1 class="rainbow-text lobby-enter-2" style="font-size:3.25rem; line-height:1.05; font-family:var(--font-display); margin-bottom:0.3rem;">Soc Ops</h1>
+        <p class="lobby-enter-3 text-ghost" style="font-size:0.8rem; letter-spacing:0.18em; text-transform:uppercase; font-weight:700; margin-bottom:0.75rem;">Social Bingo</p>
+        <p class="lobby-enter-4 text-ghost-dim" style="font-size:0.95rem; line-height:1.55; margin-bottom:1.75rem;">Meet your team. Find your people.<br>Fill the grid — five in a row wins.</p>
 
         <button onclick="launchGame()"
-                class="w-full btn-rainbow font-semibold py-4 px-8 rounded-lg text-lg">
+                class="w-full btn-rainbow font-semibold rounded-lg text-lg lobby-enter-5"
+                style="padding: 0.9rem 2rem;">
             ✨ Start Game
         </button>
+    </div>
+
+    <!-- 3-step story strip -->
+    <div class="story-strip lobby-enter-6" style="max-width: 26rem; width: 100%; margin-top: 2rem;">
+        <div class="story-step glass-card rounded-xl lobby-step-1">
+            <span class="step-icon">🃏</span>
+            <span class="step-num">01</span>
+            <span class="step-label">Pick a card</span>
+        </div>
+        <div class="story-arrow">›</div>
+        <div class="story-step glass-card rounded-xl lobby-step-2">
+            <span class="step-icon">✅</span>
+            <span class="step-num">02</span>
+            <span class="step-label">Mark moments</span>
+        </div>
+        <div class="story-arrow">›</div>
+        <div class="story-step glass-card rounded-xl lobby-step-3">
+            <span class="step-icon">🏆</span>
+            <span class="step-num">03</span>
+            <span class="step-label">Win lines</span>
+        </div>
     </div>
 </div>
 

@@ -6,12 +6,12 @@
     <title>Soc Ops — Social Bingo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
-    <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" th:href="@{/css/app.css}"/>
     <link rel="icon" type="image/png" th:href="@{/favicon.png}"/>
     <style>
-        body { font-family: var(--font-body); color: rgba(255,255,255,0.85); }
-        .tile-base:active { filter: brightness(1.25); }
+        body { font-family: var(--font-body); color: rgba(244,237,224,0.85); }
+        .tile-base:active { filter: brightness(1.15); }
     </style>
 </head>
 <body class="h-full">
@@ -21,22 +21,23 @@
 <!-- ============================================================= -->
 <div id="lobbyView" class="flex flex-col items-center justify-center min-h-full p-6 lobby-bg">
     <div class="text-center max-w-sm">
-        <div class="mb-2" style="font-size:3.5rem; line-height:1;">🌈</div>
-        <h1 class="rainbow-text mb-1" style="font-size:3.5rem; line-height:1.1; font-family:var(--font-display);">Soc Ops</h1>
-        <p class="mb-8 text-ghost" style="font-size:1rem; letter-spacing:0.12em; text-transform:uppercase; font-weight:600;">Social Bingo</p>
+        <div class="fade-up-1 mb-4" style="font-size:2.8rem; line-height:1; color:var(--gold); letter-spacing:0.1em;">✦</div>
+        <h1 class="fancy-title fade-up-2 mb-2" style="font-size:3.2rem; line-height:1.1; font-family:var(--font-display); font-weight:700;">Soc Ops</h1>
+        <span class="gold-rule fade-up-2" style="display:block; margin:0.6rem auto 0.5rem; width:4rem;"></span>
+        <p class="fade-up-2 mb-8" style="font-size:0.78rem; letter-spacing:0.28em; text-transform:uppercase; color:var(--gold); font-family:var(--font-display); opacity:0.8;">Social Bingo</p>
 
-        <div class="glass-card rounded-xl p-6 mb-8">
-            <h2 class="font-semibold mb-3" style="color:rgba(255,255,255,0.9);">How to play</h2>
-            <ul class="text-left text-ghost-dim text-sm space-y-2">
-                <li>🔍 Find people who match the questions</li>
-                <li>👆 Tap a square when you find a match</li>
-                <li>🏆 Get 5 in a row to win!</li>
+        <div class="glass-card rounded-xl p-6 mb-8 fade-up-3">
+            <h2 class="font-semibold mb-4" style="color:var(--beige); font-family:var(--font-display); font-size:1.05rem; letter-spacing:0.06em;">How to Play</h2>
+            <ul class="text-left space-y-2" style="color:rgba(244,237,224,0.62); font-size:1rem; line-height:1.5;">
+                <li style="padding-left:1.2rem; position:relative;"><span style="position:absolute;left:0;color:var(--gold);">›</span> Find people who match each square</li>
+                <li style="padding-left:1.2rem; position:relative;"><span style="position:absolute;left:0;color:var(--gold);">›</span> Tap a square when you find a match</li>
+                <li style="padding-left:1.2rem; position:relative;"><span style="position:absolute;left:0;color:var(--gold);">›</span> Complete five in a row to win</li>
             </ul>
         </div>
 
         <button onclick="launchGame()"
-                class="w-full btn-rainbow font-semibold py-4 px-8 rounded-lg text-lg">
-            ✨ Start Game
+                class="fade-up-4 w-full btn-primary font-semibold py-4 px-8 rounded-lg">
+            Begin Game
         </button>
     </div>
 </div>
@@ -47,25 +48,25 @@
 <div id="activeView" class="flex flex-col min-h-full" style="display:none">
 
     <!-- top bar -->
-    <header class="flex items-center justify-between p-3 rainbow-header">
+    <header class="flex items-center justify-between p-3 elegant-header">
         <button onclick="retreatToLobby()"
                 class="btn-ghost text-sm px-3 py-1\.5">
             &#8592; Back
         </button>
-        <h1 class="rainbow-text" style="font-family:var(--font-display); font-size:1.25rem;">Soc Ops</h1>
+        <h1 class="fancy-title" style="font-family:var(--font-display); font-size:1.15rem; font-weight:600;">Soc Ops</h1>
         <div class="w-16"></div>
     </header>
 
     <!-- hint -->
-    <p class="text-center text-ghost-dim text-sm py-2 px-4">
-        Tap a square when you find someone who matches it.
+    <p class="text-center py-2 px-4" style="font-size:0.82rem; color:rgba(244,237,224,0.42); letter-spacing:0.06em; font-style:italic;">
+        Tap a square when you find someone who matches.
     </p>
 
     <!-- bingo banner (hidden until victory) -->
     <div id="bingoBanner"
-         class="rainbow-banner text-center py-2 font-semibold"
+         class="elegant-banner text-center py-2 font-semibold"
          style="display:none">
-        🎉 BINGO! You got a line!
+        ✦ &nbsp;BINGO — You completed a line!&nbsp; ✦
     </div>
 
     <!-- the 5×5 grid -->
@@ -82,14 +83,15 @@
 <!-- ============================================================= -->
 <div id="victoryOverlay"
      class="fixed inset-0 flex items-center justify-center p-4 z-50"
-     style="display:none; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);">
+     style="display:none; background: rgba(9,16,25,0.82); backdrop-filter: blur(8px);">
     <div class="victory-modal rounded-xl p-8 max-w-xs w-full text-center">
-        <div style="font-size:3.5rem; margin-bottom:0.75rem;">🌈</div>
-        <h2 class="rainbow-text mb-2" style="font-family:var(--font-display); font-size:2.5rem;">BINGO!</h2>
-        <p class="text-ghost mb-6" style="font-size:0.95rem;">You completed a line!</p>
+        <div style="font-size:2rem; margin-bottom:0.5rem; color:var(--gold); letter-spacing:0.15em;">✦ ✦ ✦</div>
+        <h2 class="fancy-title mb-2" style="font-family:var(--font-display); font-size:2.4rem; font-weight:700;">BINGO!</h2>
+        <span class="gold-rule" style="display:block; margin:0.6rem auto 0.8rem; width:3.5rem;"></span>
+        <p class="mb-6" style="font-size:1rem; color:rgba(244,237,224,0.62); letter-spacing:0.04em;">You completed a line!</p>
         <button onclick="dismissVictoryModal()"
-                class="w-full btn-rainbow font-semibold py-3 px-6 rounded-lg">
-            🎯 Keep Playing
+                class="w-full btn-primary font-semibold py-3 px-6 rounded-lg">
+            Keep Playing
         </button>
     </div>
 </div>
@@ -140,7 +142,7 @@
             var row = Math.floor(t / 5);
             var rowClass = "tile-r" + row;
 
-            var base = "tile-base relative flex items-center justify-center p-1 text-center " +
+            var base = "tile-base tile-animate relative flex items-center justify-center p-1 text-center " +
                        "border rounded transition-all duration-150 " +
                        "select-none min-h-[60px] text-xs leading-tight ";
 
@@ -153,6 +155,9 @@
 
             var extra = tile.freeCell ? " font-bold text-sm" : "";
             btn.className = base + stateClass + extra;
+
+            /* staggered reveal delay */
+            btn.style.animationDelay = (t * 18) + "ms";
 
             if (tile.freeCell) { btn.disabled = true; }
             btn.setAttribute("aria-pressed", String(tile.selected));
@@ -167,7 +172,8 @@
             /* check-mark for marked non-free tiles */
             if (tile.selected && !tile.freeCell) {
                 var tick = document.createElement("span");
-                tick.className = "absolute top-0.5 right-0.5 text-green-600 text-xs";
+                tick.className = "absolute top-0.5 right-0.5 text-xs";
+                tick.style.color = "var(--gold-light)";
                 tick.textContent = "\u2713";
                 btn.appendChild(tick);
             }

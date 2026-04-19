@@ -19,25 +19,16 @@
 <!-- ============================================================= -->
 <!--  LOBBY — visible before a game starts                          -->
 <!-- ============================================================= -->
-<div id="lobbyView" class="flex flex-col items-center justify-center min-h-full p-6 lobby-bg">
-    <div class="text-center max-w-sm">
-        <div class="mb-2" style="font-size:3.5rem; line-height:1;">🌈</div>
-        <h1 class="rainbow-text mb-1" style="font-size:3.5rem; line-height:1.1; font-family:var(--font-display);">Soc Ops</h1>
-        <p class="mb-8 text-ghost" style="font-size:1rem; letter-spacing:0.12em; text-transform:uppercase; font-weight:600;">Social Bingo</p>
-
-        <div class="glass-card rounded-xl p-6 mb-8">
-            <h2 class="font-semibold mb-3" style="color:rgba(255,255,255,0.9);">How to play</h2>
-            <ul class="text-left text-ghost-dim text-sm space-y-2">
-                <li>🔍 Find people who match the questions</li>
-                <li>👆 Tap a square when you find a match</li>
-                <li>🏆 Get 5 in a row to win!</li>
-            </ul>
-        </div>
-
+<div id="lobbyView" class="flex flex-col items-center justify-center min-h-full lobby-hero">
+    <div class="text-center lobby-content">
+        <span class="lobby-emoji reveal-1" aria-hidden="true">🌈</span>
+        <h1 class="rainbow-text lobby-headline reveal-2">Soc Ops</h1>
+        <p class="lobby-tagline reveal-3">Find people around you who match — get 5 in a row to win.</p>
         <button onclick="launchGame()"
-                class="w-full btn-rainbow font-semibold py-4 px-8 rounded-lg text-lg">
+                class="w-full btn-rainbow btn-cta reveal-4">
             ✨ Start Game
         </button>
+        <p class="lobby-hint reveal-5">🔍 Find &nbsp;·&nbsp; 👆 Match &nbsp;·&nbsp; 🏆 Win</p>
     </div>
 </div>
 

@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" th:href="@{/favicon.png}"/>
     <style>
         body { font-family: var(--font-body); color: rgba(255,255,255,0.85); }
-        .tile-base:active { filter: brightness(1.25); }
+        .tile-base:active { transform: scale(0.88); filter: brightness(1.3); }
     </style>
 </head>
 <body class="h-full">
@@ -71,7 +71,7 @@
     <!-- the 5×5 grid -->
     <div class="flex-1 flex items-center justify-center p-3">
         <div id="gridContainer"
-             class="grid grid-cols-5 gap-1 w-full max-w-md mx-auto aspect-square">
+             class="grid grid-cols-5 gap-2 w-full max-w-md mx-auto aspect-square">
             <!-- tiles injected by JS -->
         </div>
     </div>
@@ -128,7 +128,7 @@
     }
 
     /* ── board rendering ──────────────────────────────────────── */
-    function paintGrid() {
+    function paintGrid(animate) {
         gridDiv.innerHTML = "";
         var winIds = streakFound ? gatherStreakIds(streakFound) : {};
 
@@ -141,18 +141,26 @@
             var rowClass = "tile-r" + row;
 
             var base = "tile-base relative flex items-center justify-center p-1 text-center " +
-                       "border rounded transition-all duration-150 " +
+                       "border rounded-lg transition-all duration-150 " +
                        "select-none min-h-[60px] text-xs leading-tight ";
 
             var stateClass;
             if (tile.selected) {
                 stateClass = winIds[tile.id] ? "tile-win" : "tile-selected";
+            } else if (tile.freeCell) {
+                stateClass = "tile-free";
             } else {
                 stateClass = rowClass;
             }
 
             var extra = tile.freeCell ? " font-bold text-sm" : "";
             btn.className = base + stateClass + extra;
+
+            /* staggered reveal animation on fresh board load */
+            if (animate) {
+                btn.classList.add("tile-reveal");
+                btn.style.setProperty("--tile-index", t);
+            }
 
             if (tile.freeCell) { btn.disabled = true; }
             btn.setAttribute("aria-pressed", String(tile.selected));
@@ -300,7 +308,7 @@
                 modalShown  = false;
                 currentPhase = "ACTIVE";
                 persistSnapshot();
-                paintGrid();
+                paintGrid(true);
                 showPhase("ACTIVE");
             });
     };

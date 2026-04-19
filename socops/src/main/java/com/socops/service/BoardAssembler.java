@@ -3,7 +3,6 @@ package com.socops.service;
 import com.socops.data.IcebreakerPrompts;
 import com.socops.model.BingoCell;
 import com.socops.model.WinningStreak;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;

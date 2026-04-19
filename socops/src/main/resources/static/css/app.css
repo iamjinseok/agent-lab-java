@@ -1,71 +1,103 @@
 /* Soc Ops — Social Bingo utility stylesheet
-   Rainbow Theme — dark canvas, animated rainbow gradients, glassmorphism cards */
+   Accessible Theme — high-contrast dark mode, WCAG AA compliant */
 
 /* ── design tokens ─────────────────────────────────────────────── */
 :root {
-    --r1: #ff4d6d;   /* red */
-    --r2: #ff9f43;   /* orange */
-    --r3: #ffd60a;   /* yellow */
-    --r4: #06d6a0;   /* green */
-    --r5: #4cc9f0;   /* blue */
-    --r6: #7b2fff;   /* violet */
-    --r7: #f72585;   /* magenta */
-    --bg-dark: #0d0d1a;
-    --glass-bg: rgba(255, 255, 255, 0.07);
-    --glass-border: rgba(255, 255, 255, 0.15);
-    --tile-r0: rgba(255, 77, 109, 0.12);
-    --tile-r1: rgba(255, 159, 67, 0.12);
-    --tile-r2: rgba(255, 214, 10, 0.12);
-    --tile-r3: rgba(6, 214, 160, 0.12);
-    --tile-r4: rgba(76, 201, 240, 0.12);
-    --tile-r0-border: rgba(255, 77, 109, 0.4);
-    --tile-r1-border: rgba(255, 159, 67, 0.4);
-    --tile-r2-border: rgba(255, 214, 10, 0.4);
-    --tile-r3-border: rgba(6, 214, 160, 0.4);
-    --tile-r4-border: rgba(76, 201, 240, 0.4);
-    --tile-r0-text: #ffb3c1;
-    --tile-r1-text: #ffd4a8;
-    --tile-r2-text: #fff0a0;
-    --tile-r3-text: #a8ffe8;
-    --tile-r4-text: #b3e8ff;
-    --font-display: 'Boogaloo', cursive;
-    --font-body: 'Nunito', sans-serif;
+    /* Core accessible palette */
+    --bg-base:     #0b0e1a;          /* page background                        */
+    --bg-surface:  #141929;          /* card / panel background                */
+    --bg-elevated: #1e2438;          /* raised elements                        */
+    --bg-tile:     #181c2e;          /* default tile background                */
+
+    --fg-primary:   #e8eaf8;         /* primary text  (~14:1 on --bg-base)     */
+    --fg-secondary: #8c94b8;         /* secondary text (~5:1 on --bg-base)     */
+
+    --accent:       #38bdf8;         /* sky-blue accent (~9:1 on --bg-base)    */
+    --accent-hover: #7dd3fc;
+    --accent-dim:   rgba(56, 189, 248, 0.12);
+
+    --success:        #4ade80;       /* green for selected (~7:1 on --bg-base) */
+    --success-dim:    rgba(74, 222, 128, 0.12);
+    --success-border: rgba(74, 222, 128, 0.5);
+
+    --win-color:  #fbbf24;           /* amber for winning  (~7:1 on --bg-base) */
+    --win-dim:    rgba(251, 191, 36, 0.12);
+    --win-border: rgba(251, 191, 36, 0.6);
+
+    --border-base:   rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.18);
+
+    --focus-ring: #38bdf8;
+
+    /* Tile row accent borders (decorative only, text stays --fg-primary) */
+    --tile-r0: var(--bg-tile);
+    --tile-r1: var(--bg-tile);
+    --tile-r2: var(--bg-tile);
+    --tile-r3: var(--bg-tile);
+    --tile-r4: var(--bg-tile);
+    --tile-r0-border: rgba(56, 189, 248, 0.35);
+    --tile-r1-border: rgba(74, 222, 128, 0.35);
+    --tile-r2-border: rgba(251, 191, 36, 0.35);
+    --tile-r3-border: rgba(167, 139, 250, 0.35);
+    --tile-r4-border: rgba(251, 113, 133, 0.35);
+    --tile-r0-text: var(--fg-primary);
+    --tile-r1-text: var(--fg-primary);
+    --tile-r2-text: var(--fg-primary);
+    --tile-r3-text: var(--fg-primary);
+    --tile-r4-text: var(--fg-primary);
+
+    /* Legacy aliases kept for any remaining inline references */
+    --bg-dark:     var(--bg-base);
+    --glass-bg:    rgba(20, 25, 41, 0.92);
+    --glass-border: var(--border-base);
+
+    --font-display: 'Outfit', sans-serif;
+    --font-body:    'Outfit', sans-serif;
 }
 
 /* ── keyframes ─────────────────────────────────────────────────── */
-@keyframes rainbow-bg {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
 @keyframes shimmer {
     0%   { background-position: -200% center; }
-    100% { background-position: 200% center; }
-}
-
-@keyframes glow-pulse {
-    0%, 100% { box-shadow: 0 0 12px 2px var(--r5), 0 0 32px 4px var(--r6); }
-    25%       { box-shadow: 0 0 12px 2px var(--r7), 0 0 32px 4px var(--r1); }
-    50%       { box-shadow: 0 0 12px 2px var(--r3), 0 0 32px 4px var(--r4); }
-    75%       { box-shadow: 0 0 12px 2px var(--r2), 0 0 32px 4px var(--r5); }
+    100% { background-position:  200% center; }
 }
 
 @keyframes tile-pop {
     0%   { transform: scale(1); }
-    40%  { transform: scale(1.12); }
+    40%  { transform: scale(1.08); }
     100% { transform: scale(1); }
 }
 
-@keyframes banner-scroll {
-    0%   { background-position: 0% 50%; }
-    100% { background-position: 200% 50%; }
+@keyframes banner-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.85; }
 }
 
 @keyframes modal-in {
-    0%   { transform: scale(0.7) rotate(-4deg); opacity: 0; }
-    60%  { transform: scale(1.05) rotate(1deg); }
-    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    0%   { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ── global focus styles (WCAG 2.4.7 / 2.4.11) ────────────────── */
+:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* ── reduced-motion: minimise every animation/transition ─────── */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration:       0.01ms !important;
+        animation-iteration-count: 1     !important;
+        transition-duration:      0.01ms !important;
+        scroll-behavior:          auto   !important;
+    }
 }
 
 html,
@@ -77,16 +109,11 @@ body {
 body {
     font-family: var(--font-body);
     -webkit-tap-highlight-color: transparent;
-    background-color: var(--bg-dark);
-    background-image: linear-gradient(
-        135deg,
-        #0d0d1a 0%,
-        #12002a 20%,
-        #001a2a 40%,
-        #0a0d00 60%,
-        #1a000d 80%,
-        #0d0d1a 100%
-    );
+    background-color: var(--bg-base);
+    background-image:
+        radial-gradient(ellipse at 20% 0%,   rgba(56, 189, 248, 0.06) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 100%, rgba(74, 222, 128, 0.05) 0%, transparent 55%);
+    color: var(--fg-primary);
 }
 
 /* ── sizing ────────────────────────────────────────────────────── */
@@ -222,10 +249,6 @@ body {
 }
 .duration-150 { transition-duration: 150ms; }
 
-/* ── active-state helpers ──────────────────────────────────────── */
-button:active .active\:bg-gray-100   { background-color: #f3f4f6; }
-button:active .active\:bg-accent-light { background-color: #3b82f6; }
-
 /* ── button reset ──────────────────────────────────────────────── */
 button {
     cursor: pointer;
@@ -238,70 +261,67 @@ button:disabled { cursor: default; }
 /* ── word-wrapping helpers ─────────────────────────────────────── */
 .wrap-break-word { word-break: break-word; }
 
-/* ── rainbow text shimmer ──────────────────────────────────────── */
+/* ── accessible title gradient (no animation by default) ───────── */
 .rainbow-text {
-    background: linear-gradient(
-        90deg,
-        var(--r1), var(--r2), var(--r3), var(--r4), var(--r5), var(--r6), var(--r7), var(--r1)
-    );
-    background-size: 200% auto;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--success) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shimmer 3s linear infinite;
 }
 
-/* ── glassmorphism card ────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+    .rainbow-text {
+        background: linear-gradient(90deg, var(--accent), var(--success), var(--win-color), var(--accent));
+        background-size: 250% auto;
+        animation: shimmer 5s linear infinite;
+    }
+}
+
+/* ── surface card (replaces glassmorphism) ─────────────────────── */
 .glass-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
 }
 
-/* ── rainbow gradient button ───────────────────────────────────── */
+/* ── primary action button ─────────────────────────────────────── */
 .btn-rainbow {
-    background: linear-gradient(90deg, var(--r1), var(--r2), var(--r3), var(--r4), var(--r5), var(--r6));
-    background-size: 200% auto;
-    color: #fff;
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    letter-spacing: 0.04em;
-    border: none;
-    transition: background-position 0.4s ease, box-shadow 0.3s ease, transform 0.15s ease;
-    box-shadow: 0 4px 24px rgba(123, 47, 255, 0.35);
+    background: var(--accent);
+    color: var(--bg-base);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    border: 2px solid transparent;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 4px 16px rgba(56, 189, 248, 0.3);
 }
 .btn-rainbow:hover {
-    background-position: right center;
-    box-shadow: 0 6px 32px rgba(247, 37, 133, 0.5);
-    transform: translateY(-2px);
+    background: var(--accent-hover);
+    box-shadow: 0 6px 24px rgba(56, 189, 248, 0.45);
+    transform: translateY(-1px);
 }
 .btn-rainbow:active {
     transform: translateY(0);
-    box-shadow: 0 2px 12px rgba(123, 47, 255, 0.4);
+    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
 }
 
-/* ── rainbow header bar ────────────────────────────────────────── */
+/* ── game header bar ───────────────────────────────────────────── */
 .rainbow-header {
-    background: rgba(13, 13, 26, 0.9);
-    border-bottom: 2px solid transparent;
-    border-image: linear-gradient(90deg, var(--r1), var(--r2), var(--r3), var(--r4), var(--r5), var(--r6), var(--r7)) 1;
-    backdrop-filter: blur(8px);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-strong);
 }
 
-/* ── rainbow bingo banner ──────────────────────────────────────── */
+/* ── bingo banner ──────────────────────────────────────────────── */
 .rainbow-banner {
-    background: linear-gradient(
-        90deg,
-        var(--r1), var(--r2), var(--r3), var(--r4), var(--r5), var(--r6), var(--r7), var(--r1)
-    );
-    background-size: 200% auto;
-    animation: banner-scroll 2s linear infinite;
-    color: #fff;
-    font-family: var(--font-display);
+    background: var(--success);
+    color: var(--bg-base);
+    font-weight: 700;
     font-size: 1rem;
-    letter-spacing: 0.08em;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    letter-spacing: 0.06em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .rainbow-banner {
+        animation: banner-pulse 2s ease-in-out infinite;
+    }
 }
 
 /* ── grid tile row tints ───────────────────────────────────────── */
@@ -309,81 +329,98 @@ button:disabled { cursor: default; }
     background-color: var(--tile-r0);
     border-color: var(--tile-r0-border);
     color: var(--tile-r0-text);
+    border-left: 3px solid rgba(56, 189, 248, 0.5);
 }
 .tile-r1 {
     background-color: var(--tile-r1);
     border-color: var(--tile-r1-border);
     color: var(--tile-r1-text);
+    border-left: 3px solid rgba(74, 222, 128, 0.5);
 }
 .tile-r2 {
     background-color: var(--tile-r2);
     border-color: var(--tile-r2-border);
     color: var(--tile-r2-text);
+    border-left: 3px solid rgba(251, 191, 36, 0.5);
 }
 .tile-r3 {
     background-color: var(--tile-r3);
     border-color: var(--tile-r3-border);
     color: var(--tile-r3-text);
+    border-left: 3px solid rgba(167, 139, 250, 0.5);
 }
 .tile-r4 {
     background-color: var(--tile-r4);
     border-color: var(--tile-r4-border);
     color: var(--tile-r4-text);
+    border-left: 3px solid rgba(251, 113, 133, 0.5);
 }
 
-/* ── selected tile glow ────────────────────────────────────────── */
+/* ── selected tile ─────────────────────────────────────────────── */
 .tile-selected {
-    background: linear-gradient(135deg, rgba(247,37,133,0.35), rgba(76,201,240,0.35)) !important;
-    border-color: rgba(255,255,255,0.6) !important;
-    color: #fff !important;
-    box-shadow: 0 0 10px 2px rgba(123, 47, 255, 0.5), inset 0 0 8px rgba(255,255,255,0.1);
-    animation: tile-pop 0.25s ease-out;
+    background-color: rgba(56, 189, 248, 0.18) !important;
+    border-color: var(--accent) !important;
+    color: var(--fg-primary) !important;
+    border-left-width: 3px !important;
+    border-left-color: var(--accent) !important;
 }
 
-/* ── winning tile glow ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+    .tile-selected {
+        animation: tile-pop 0.2s ease-out;
+    }
+}
+
+/* ── winning tile ──────────────────────────────────────────────── */
 .tile-win {
-    background: linear-gradient(135deg, rgba(255,214,10,0.5), rgba(255,77,109,0.45)) !important;
-    border-color: var(--r3) !important;
-    color: #fff !important;
-    box-shadow: 0 0 18px 4px rgba(255,214,10,0.6), inset 0 0 10px rgba(255,255,255,0.15);
+    background-color: rgba(251, 191, 36, 0.18) !important;
+    border-color: var(--win-color) !important;
+    color: var(--win-color) !important;
+    border-left-width: 3px !important;
+    border-left-color: var(--win-color) !important;
+    font-weight: 700;
 }
 
-/* ── victory modal glow ────────────────────────────────────────── */
+/* ── victory modal ─────────────────────────────────────────────── */
 .victory-modal {
-    background: linear-gradient(145deg, #1a0535, #0a1a2a);
-    border: 1px solid var(--glass-border);
-    animation: modal-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both, glow-pulse 3s ease-in-out 0.5s infinite;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
 }
 
-/* ── lobby background overlay ──────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+    .victory-modal {
+        animation: modal-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+}
+
+/* ── lobby background ──────────────────────────────────────────── */
 .lobby-bg {
     background:
-        radial-gradient(ellipse at 20% 30%, rgba(247, 37, 133, 0.15) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 70%, rgba(76, 201, 240, 0.15) 0%, transparent 60%),
-        radial-gradient(ellipse at 50% 100%, rgba(6, 214, 160, 0.1) 0%, transparent 50%);
+        radial-gradient(ellipse at 15% 25%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 85% 75%, rgba(74, 222, 128, 0.07) 0%, transparent 60%);
 }
 
-/* ── back button ghost style ───────────────────────────────────── */
+/* ── back / ghost button ───────────────────────────────────────── */
 .btn-ghost {
-    color: rgba(255,255,255,0.6);
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--fg-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-strong);
     border-radius: 0.375rem;
     transition: background 0.15s ease, color 0.15s ease;
 }
 .btn-ghost:hover {
-    background: rgba(255,255,255,0.12);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--fg-primary);
 }
 
-/* ── leading-tight ─────────────────────────────────────────────── */
+/* ── leading / hyphen helpers ──────────────────────────────────── */
 .leading-tight { line-height: 1.25; }
-.hyphens-auto    { hyphens: auto; }
-.leading-tight   { line-height: 1.25; }
+.hyphens-auto  { hyphens: auto; }
 
 .min-h-\[60px\] { min-height: 60px; }
 
-/* ── keyframes ─────────────────────────────────────────────────── */
+/* ── keyframes (bounce for optional use) ───────────────────────── */
 @keyframes bounce {
     0%, 100% {
         transform: translateY(-25%);

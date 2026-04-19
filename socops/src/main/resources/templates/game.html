@@ -26,11 +26,14 @@
         <div class="lobby-hero">
             <div class="lobby-emoji">🌈</div>
             <h1 class="rainbow-text lobby-title">Soc Ops</h1>
-            <p class="lobby-sub">Social Bingo</p>
-            <p class="lobby-tagline">Find someone who matches each square.<br>Five in a row — you win!</p>
+            <p class="lobby-sub">Social Icebreaker</p>
+            <p class="lobby-tagline">Find someone who matches each square or item.<br>Then celebrate together!</p>
             <div class="lobby-cta-wrap">
-                <button onclick="launchGame()" class="btn-rainbow font-semibold rounded-lg lobby-cta-btn">
-                    ✨ Start Game
+                <button onclick="launchBingoGame()" class="btn-rainbow font-semibold rounded-lg lobby-cta-btn">
+                    🎲 Bingo
+                </button>
+                <button onclick="launchScavengerHuntGame()" class="btn-rainbow font-semibold rounded-lg lobby-cta-btn">
+                    📋 Scavenger Hunt
                 </button>
             </div>
         </div>
@@ -81,6 +84,40 @@
 </div>
 
 <!-- ============================================================= -->
+<!--  SCAVENGER HUNT VIEW — checklist + progress                   -->
+<!-- ============================================================= -->
+<div id="scavengerView" class="flex flex-col min-h-full" style="display:none">
+
+    <!-- top bar -->
+    <header class="flex items-center justify-between p-3 rainbow-header">
+        <button onclick="retreatToLobby()"
+                class="btn-ghost text-sm px-3 py-1\.5">
+            &#8592; Back
+        </button>
+        <h1 class="rainbow-text" style="font-family:var(--font-display); font-size:1.25rem;">Scavenger Hunt</h1>
+        <div class="w-16"></div>
+    </header>
+
+    <!-- progress section -->
+    <div class="p-4">
+        <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-semibold text-ghost">Progress</span>
+            <span id="progressCounter" class="text-sm font-bold text-ghost-dim">0 / 24</span>
+        </div>
+        <div id="progressBarContainer" class="w-full bg-gray-800 rounded-full h-3 overflow-hidden border border-gray-700">
+            <div id="progressBar" class="progress-bar-fill h-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <!-- checklist -->
+    <div class="flex-1 overflow-y-auto px-4 pb-4">
+        <div id="checklistContainer" class="space-y-2">
+            <!-- checklist items injected by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================= -->
 <!--  VICTORY MODAL — overlays the board                            -->
 <!-- ============================================================= -->
 <div id="victoryOverlay"
@@ -88,8 +125,8 @@
      style="display:none; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);">
     <div class="victory-modal rounded-xl p-8 max-w-xs w-full text-center">
         <div style="font-size:3.5rem; margin-bottom:0.75rem;">🌈</div>
-        <h2 class="rainbow-text mb-2" style="font-family:var(--font-display); font-size:2.5rem;">BINGO!</h2>
-        <p class="text-ghost mb-6" style="font-size:0.95rem;">You completed a line!</p>
+        <h2 id="victoryTitle" class="rainbow-text mb-2" style="font-family:var(--font-display); font-size:2.5rem;">BINGO!</h2>
+        <p id="victoryMessage" class="text-ghost mb-6" style="font-size:0.95rem;">You completed a line!</p>
         <button onclick="dismissVictoryModal()"
                 class="w-full btn-rainbow font-semibold py-3 px-6 rounded-lg">
             🎯 Keep Playing
@@ -106,31 +143,56 @@
 
     var SIDE = 5;
     var TOTAL_CELLS = SIDE * SIDE;
-    var PERSIST_KEY = "socops-bingo-snapshot";
+    var TOTAL_HUNT_ITEMS = 24;
+    var PERSIST_KEY_BINGO = "socops-bingo-snapshot";
+    var PERSIST_KEY_HUNT = "socops-scavenger-snapshot";
 
     /* ── state ────────────────────────────────────────────────── */
-    var liveTiles   = [];          /* Array of BingoCell objects  */
-    var streakFound = null;        /* WinningStreak or null       */
+    var gameMode = "NONE";              /* BINGO | SCAVENGER | NONE */
+    var currentPhase = "LOBBY";         /* LOBBY | ACTIVE | VICTORY */
     var modalShown  = false;
-    var currentPhase = "LOBBY";    /* LOBBY | ACTIVE | VICTORY    */
+
+    /* Bingo state */
+    var liveTiles   = [];               /* Array of BingoCell objects */
+    var streakFound = null;             /* WinningStreak or null */
+
+    /* Scavenger hunt state */
+    var scavengerItems = [];            /* Array of {id, prompt, checked} */
+    var scavengerProgress = 0;          /* Number of checked items */
 
     /* ── DOM refs ─────────────────────────────────────────────── */
-    var lobbyDiv   = document.getElementById("lobbyView");
-    var activeDiv  = document.getElementById("activeView");
-    var gridDiv    = document.getElementById("gridContainer");
-    var bannerDiv  = document.getElementById("bingoBanner");
-    var overlayDiv = document.getElementById("victoryOverlay");
+    var lobbyDiv       = document.getElementById("lobbyView");
+    var activeDiv      = document.getElementById("activeView");
+    var scavengerDiv   = document.getElementById("scavengerView");
+    var gridDiv        = document.getElementById("gridContainer");
+    var bannerDiv      = document.getElementById("bingoBanner");
+    var overlayDiv     = document.getElementById("victoryOverlay");
+    var checklistDiv   = document.getElementById("checklistContainer");
+    var progressBar    = document.getElementById("progressBar");
+    var progressCounter = document.getElementById("progressCounter");
+    var victoryTitle   = document.getElementById("victoryTitle");
+    var victoryMessage = document.getElementById("victoryMessage");
 
-    /* ── phase switching ──────────────────────────────────────── */
-    function showPhase(phase) {
-        currentPhase = phase;
-        lobbyDiv.style.display   = (phase === "LOBBY") ? "" : "none";
-        activeDiv.style.display  = (phase !== "LOBBY") ? "" : "none";
-        bannerDiv.style.display  = (streakFound)       ? "" : "none";
-        overlayDiv.style.display = (modalShown)        ? "" : "none";
+    /* ── view display helpers ─────────────────────────────────── */
+    function setDisplayStyle(elem, show) {
+        elem.style.display = show ? "" : "none";
     }
 
-    /* ── board rendering ──────────────────────────────────────── */
+    function showPhase(phase) {
+        currentPhase = phase;
+        var isLobby = (phase === "LOBBY");
+        var isBingo = (gameMode === "BINGO" && phase !== "LOBBY");
+        var isHunt = (gameMode === "SCAVENGER" && phase !== "LOBBY");
+
+        setDisplayStyle(lobbyDiv, isLobby);
+        setDisplayStyle(activeDiv, isBingo);
+        setDisplayStyle(scavengerDiv, isHunt);
+        setDisplayStyle(bannerDiv, streakFound && gameMode === "BINGO");
+        setDisplayStyle(overlayDiv, modalShown);
+    }
+
+    /* ── BINGO LOGIC ──────────────────────────────────────────── */
+
     function paintGrid() {
         gridDiv.innerHTML = "";
         var winIds = streakFound ? gatherStreakIds(streakFound) : {};
@@ -184,25 +246,34 @@
         }
     }
 
-    /* ── tile tap logic ───────────────────────────────────────── */
     function onTileTapped(cellId) {
         liveTiles = flipTile(liveTiles, cellId);
 
         if (!streakFound) {
-            var detected = scanForStreak(liveTiles);
-            if (detected) {
-                streakFound = detected;
-                currentPhase = "VICTORY";
-                modalShown = true;
+            streakFound = scanForStreak(liveTiles);
+            if (streakFound) {
+                triggerVictory("BINGO");
             }
         }
         persistSnapshot();
         paintGrid();
-        bannerDiv.style.display  = streakFound ? "" : "none";
-        overlayDiv.style.display = modalShown  ? "" : "none";
+        setDisplayStyle(bannerDiv, !!streakFound);
+        setDisplayStyle(overlayDiv, modalShown);
     }
 
-    /* ── board manipulation (mirrors BoardAssembler.java) ─────── */
+    function triggerVictory(mode) {
+        currentPhase = "VICTORY";
+        modalShown = true;
+        if (mode === "BINGO") {
+            victoryTitle.textContent = "BINGO!";
+            victoryMessage.textContent = "You completed a line!";
+        } else if (mode === "SCAVENGER") {
+            victoryTitle.textContent = "COMPLETE!";
+            victoryMessage.textContent = "You found everyone!";
+        }
+        overlayDiv.style.display = "";
+    }
+
     function flipTile(board, cellId) {
         return board.map(function (c) {
             if (c.id === cellId && !c.freeCell) {
@@ -212,7 +283,6 @@
         });
     }
 
-    /* ── victory scanning (mirrors detectWinningStreak) ───────── */
     function scanForStreak(board) {
         var r, c, positions, i;
 
@@ -266,53 +336,178 @@
         return lookup;
     }
 
+    /* ── SCAVENGER HUNT LOGIC ─────────────────────────────────── */
+
+    function paintChecklist() {
+        checklistDiv.innerHTML = "";
+        for (var i = 0; i < scavengerItems.length; i++) {
+            var item = scavengerItems[i];
+            var itemDiv = document.createElement("div");
+            itemDiv.className = "checklist-item";
+            if (item.checked) {
+                itemDiv.classList.add("checklist-item-checked");
+            }
+
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = "checklist-checkbox";
+            checkbox.checked = item.checked;
+            checkbox.setAttribute("aria-label", item.prompt);
+            
+            checkbox.addEventListener("change", (function (idx) {
+                return function () { onChecklistItemToggled(idx); };
+            })(i));
+
+            var label = document.createElement("label");
+            label.className = "checklist-label";
+            label.textContent = item.prompt;
+
+            itemDiv.appendChild(checkbox);
+            itemDiv.appendChild(label);
+            checklistDiv.appendChild(itemDiv);
+        }
+    }
+
+    function calculateScavengerProgress() {
+        var count = 0;
+        for (var i = 0; i < scavengerItems.length; i++) {
+            if (scavengerItems[i].checked) { count++; }
+        }
+        return count;
+    }
+
+    function onChecklistItemToggled(itemIndex) {
+        scavengerItems[itemIndex].checked = !scavengerItems[itemIndex].checked;
+        scavengerProgress = calculateScavengerProgress();
+        updateProgressBar();
+
+        if (scavengerProgress === TOTAL_HUNT_ITEMS) {
+            triggerVictory("SCAVENGER");
+        }
+
+        persistSnapshot();
+        paintChecklist();
+    }
+
+    function updateProgressBar() {
+        var percent = (scavengerProgress / TOTAL_HUNT_ITEMS) * 100;
+        progressBar.style.width = percent + "%";
+        progressCounter.textContent = scavengerProgress + " / " + TOTAL_HUNT_ITEMS;
+    }
+
     /* ── localStorage persistence ─────────────────────────────── */
+    function createBingoSnapshot() {
+        return {
+            phase: currentPhase,
+            mode: "BINGO",
+            tiles: liveTiles,
+            streak: streakFound,
+            modal: modalShown
+        };
+    }
+
+    function createScavengerSnapshot() {
+        return {
+            phase: currentPhase,
+            mode: "SCAVENGER",
+            items: scavengerItems,
+            progress: scavengerProgress,
+            modal: modalShown
+        };
+    }
+
     function persistSnapshot() {
         try {
-            var blob = JSON.stringify({
-                phase: currentPhase,
-                tiles: liveTiles,
-                streak: streakFound,
-                modal: modalShown
-            });
-            localStorage.setItem(PERSIST_KEY, blob);
+            var snapshot = gameMode === "BINGO" ? createBingoSnapshot() : createScavengerSnapshot();
+            var key = gameMode === "BINGO" ? PERSIST_KEY_BINGO : PERSIST_KEY_HUNT;
+            localStorage.setItem(key, JSON.stringify(snapshot));
         } catch (_) { /* storage full or unavailable */ }
     }
 
     function restoreSnapshot() {
         try {
-            var raw = localStorage.getItem(PERSIST_KEY);
-            if (!raw) { return false; }
-            var snap = JSON.parse(raw);
-            if (!snap.tiles || snap.tiles.length !== TOTAL_CELLS) { return false; }
-            liveTiles   = snap.tiles;
-            streakFound = snap.streak || null;
-            modalShown  = !!snap.modal;
-            currentPhase = snap.phase || "ACTIVE";
-            return currentPhase !== "LOBBY";
-        } catch (_) { return false; }
+            /* Try to restore bingo first */
+            var bingoRaw = localStorage.getItem(PERSIST_KEY_BINGO);
+            if (bingoRaw && !sessionStorage.getItem("scavenger-hunt-started")) {
+                var bingoSnap = JSON.parse(bingoRaw);
+                if (bingoSnap.tiles && bingoSnap.tiles.length === TOTAL_CELLS && bingoSnap.mode === "BINGO") {
+                    gameMode = "BINGO";
+                    liveTiles = bingoSnap.tiles;
+                    streakFound = bingoSnap.streak || null;
+                    modalShown = !!bingoSnap.modal;
+                    currentPhase = bingoSnap.phase || "ACTIVE";
+                    return currentPhase !== "LOBBY";
+                }
+            }
+
+            /* Try to restore scavenger hunt */
+            var huntRaw = localStorage.getItem(PERSIST_KEY_HUNT);
+            if (huntRaw) {
+                var huntSnap = JSON.parse(huntRaw);
+                if (huntSnap.items && huntSnap.items.length === TOTAL_HUNT_ITEMS && huntSnap.mode === "SCAVENGER") {
+                    gameMode = "SCAVENGER";
+                    scavengerItems = huntSnap.items;
+                    scavengerProgress = huntSnap.progress || 0;
+                    modalShown = !!huntSnap.modal;
+                    currentPhase = huntSnap.phase || "ACTIVE";
+                    return currentPhase !== "LOBBY";
+                }
+            }
+
+            return false;
+        } catch (_) {
+            return false;
+        }
+    }
+
+    /* ── game initialization helpers ───────────────────────────── */
+    function resetGameState() {
+        gameMode = "NONE";
+        liveTiles = [];
+        scavengerItems = [];
+        streakFound = null;
+        scavengerProgress = 0;
+        currentPhase = "LOBBY";
+        modalShown = false;
+    }
+
+    function initializeGame(mode, renderFn) {
+        gameMode = mode;
+        modalShown = false;
+        currentPhase = "ACTIVE";
+        persistSnapshot();
+        if (renderFn) { renderFn(); }
+        showPhase("ACTIVE");
     }
 
     /* ── public API (called from onclick attrs) ───────────────── */
-    window.launchGame = function () {
+    window.launchBingoGame = function () {
         fetch("/api/bingo/fresh-board")
             .then(function (resp) { return resp.json(); })
             .then(function (cells) {
-                liveTiles   = cells;
+                liveTiles = cells;
                 streakFound = null;
-                modalShown  = false;
-                currentPhase = "ACTIVE";
-                persistSnapshot();
-                paintGrid();
-                showPhase("ACTIVE");
+                initializeGame("BINGO", paintGrid);
+            });
+    };
+
+    window.launchScavengerHuntGame = function () {
+        fetch("/api/scavenger-hunt/fresh-list")
+            .then(function (resp) { return resp.json(); })
+            .then(function (prompts) {
+                scavengerItems = prompts.map(function (prompt, idx) {
+                    return { id: idx, prompt: prompt, checked: false };
+                });
+                scavengerProgress = 0;
+                initializeGame("SCAVENGER", function () {
+                    updateProgressBar();
+                    paintChecklist();
+                });
             });
     };
 
     window.retreatToLobby = function () {
-        liveTiles   = [];
-        streakFound = null;
-        modalShown  = false;
-        currentPhase = "LOBBY";
+        resetGameState();
         persistSnapshot();
         showPhase("LOBBY");
     };
@@ -323,13 +518,22 @@
         persistSnapshot();
     };
 
-    /* ── boot ─────────────────────────────────────────────────── */
-    if (restoreSnapshot()) {
-        paintGrid();
+    /* ── bootstrap ────────────────────────────────────────────── */
+    function bootGame() {
+        if (!restoreSnapshot()) {
+            showPhase("LOBBY");
+            return;
+        }
+        if (gameMode === "BINGO") {
+            paintGrid();
+        } else if (gameMode === "SCAVENGER") {
+            updateProgressBar();
+            paintChecklist();
+        }
         showPhase(currentPhase);
-    } else {
-        showPhase("LOBBY");
     }
+
+    bootGame();
 })();
 </script>
 

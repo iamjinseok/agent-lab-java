@@ -451,12 +451,26 @@ button:disabled { cursor: default; }
 .lobby-cta-wrap {
     width: 100%;
     animation: pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
 }
 
 .lobby-cta-btn {
     width: 100%;
     padding: 1rem 2rem;
     font-size: 1.25rem;
+}
+
+/* ── two-button layout on wider screens ───────────────────────── */
+@media (min-width: 480px) {
+    .lobby-cta-wrap {
+        flex-direction: row;
+    }
+    
+    .lobby-cta-btn {
+        flex: 1;
+    }
 }
 
 /* ── teaser board ──────────────────────────────────────────────── */
@@ -564,3 +578,110 @@ button:disabled { cursor: default; }
 .animate-\[bounce_0\.5s_ease-out\] {
     animation: bounce 0.5s ease-out;
 }
+
+/* ── Scavenger Hunt Progress Bar ───────────────────────────────── */
+#progressBar,
+.progress-bar-fill {
+    background: linear-gradient(90deg, var(--r1), var(--r2), var(--r3), var(--r4), var(--r5), var(--r6), var(--r7));
+    background-size: 200% auto;
+    box-shadow: 0 0 8px rgba(123, 47, 255, 0.4);
+}
+
+/* ── Scavenger Hunt Checklist ──────────────────────────────────── */
+#checklistContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.checklist-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.checklist-item-checked {
+    background: rgba(76, 201, 240, 0.1);
+    border-color: rgba(76, 201, 240, 0.3);
+}
+
+.checklist-checkbox {
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    min-width: 1.25rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.35rem;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-top: 0.1rem;
+}
+
+.checklist-checkbox:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+}
+
+.checklist-checkbox:checked {
+    background: linear-gradient(135deg, rgba(76, 201, 240, 0.8), rgba(123, 47, 255, 0.8));
+    border-color: var(--r5);
+    box-shadow: 0 0 8px rgba(76, 201, 240, 0.5);
+}
+
+.checklist-checkbox:checked::after {
+    content: "\u2713";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: bold;
+    width: 100%;
+    height: 100%;
+}
+
+.checklist-label {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    word-break: break-word;
+}
+
+.checklist-item-checked .checklist-label {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: line-through;
+}
+
+/* ── Scavenger hunt view styling ───────────────────────────────── */
+#scavengerView {
+    background: var(--bg-dark);
+    background-image: linear-gradient(
+        135deg,
+        #0d0d1a 0%,
+        #12002a 20%,
+        #001a2a 40%,
+        #0a0d00 60%,
+        #1a000d 80%,
+        #0d0d1a 100%
+    );
+}
+
+#checklistContainer {
+    max-width: 32rem;
+    margin: 0 auto;
+}
+
